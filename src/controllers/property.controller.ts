@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { AppError } from '../utils/app-error.js';
-
-const prisma = new PrismaClient();
+import { prisma } from '../utils/prisma.js';
 
 export const getCategories = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {

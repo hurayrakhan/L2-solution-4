@@ -1,10 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
 import Stripe from 'stripe';
 import { AppError } from '../utils/app-error.js';
 import { AuthRequest } from '../middlewares/auth.middleware.js';
-
-const prisma = new PrismaClient();
+import { prisma } from '../utils/prisma.js';
 
 const getStripeInstance = () => {
   const secretKey = process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder';

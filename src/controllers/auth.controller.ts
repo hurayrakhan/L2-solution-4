@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../utils/app-error.js';
 import { AuthRequest } from '../middlewares/auth.middleware.js';
-
-const prisma = new PrismaClient();
+import { prisma } from '../utils/prisma.js';
 
 const signToken = (id: string): string => {
   const secret = process.env.JWT_SECRET || 'rentnest_jwt_secret_token_change_in_production';

@@ -1,9 +1,7 @@
 import { Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { AppError } from '../utils/app-error.js';
 import { AuthRequest } from '../middlewares/auth.middleware.js';
-
-const prisma = new PrismaClient();
+import { prisma } from '../utils/prisma.js';
 
 export const createRentalRequest = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {

@@ -4,6 +4,10 @@ import cookieParser from 'cookie-parser';
 import { globalErrorHandler } from './middlewares/error.middleware.js';
 import { AppError } from './utils/app-error.js';
 
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger.js";
+
+
 import authRouter from './routes/auth.routes.js';
 import propertyRouter from './routes/property.routes.js';
 import landlordRouter from './routes/landlord.routes.js';
@@ -30,6 +34,13 @@ app.get('/', (req, res) => {
     message: 'Welcome to the RentNest API 🏠',
   });
 });
+
+// swagger api-docs
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
 
 // We will mount routes here later
 app.use('/api/auth', authRouter);
