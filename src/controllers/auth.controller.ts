@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 const signToken = (id: string): string => {
   const secret = process.env.JWT_SECRET || 'rentnest_jwt_secret_token_change_in_production';
-  const expires = process.env.JWT_EXPIRES_IN || '7d';
+  const expires = (process.env.JWT_EXPIRES_IN || '7d') as any;
   return jwt.sign({ id }, secret, { expiresIn: expires });
 };
 
