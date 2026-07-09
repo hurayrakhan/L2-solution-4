@@ -81,6 +81,59 @@ async function runTests() {
     const meTenantData = await meTenantRes.json() as any;
     console.log('Tenant Profile Fetch:', meTenantData.success ? 'PASSED' : 'FAILED', meTenantData.data?.name);
 
+    console.log('\n--- RUNNING PROPERTY TESTS ---');
+    // 5. Login Landlord
+    const loginLandlordRes = await fetch(`${BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: landlordEmail,
+        password: 'password123',
+      }),
+    });
+    const loginLandlordData = await loginLandlordRes.json() as any;
+    console.log('Landlord Login:', loginLandlordData.success ? 'PASSED' : 'FAILED', loginLandlordData.message);
+    const landlordToken = loginLandlordData.token;
+
+    // 6. Get Categories
+    const categoriesRes = await fetch(`${BASE_URL}/categories`);
+    const categoriesData = await categoriesRes.json() as any;
+    console.log('Get Categories:', categoriesData.success ? 'PASSED' : 'FAILED', `${categoriesData.data?.length} categories found`);
+    const categoryId = categoriesData.data?.[0]?.id;
+
+    if (!categoryId) throw new Error('No category found, seed database first');
+
+    // 7. Create Property as Landlord
+    const createPropRes = await fetch(`${BASE_URL}/landlord/properties`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${landlordToken}`,
+      },
+      body: JSON.stringify({
+        title: 'Beautiful Studio Apartment',
+        description: 'Cozy studio apartment near downtown.',
+        location: 'Downtown Dhaka',
+        price: 350.00,
+        categoryId: categoryId,
+        amenities: ['WiFi', 'Air Conditioning', 'Kitchen'],
+        images: ['https://example.com/image.jpg'],
+      }),
+    });
+    const createPropData = await createPropRes.json() as any;
+    console.log('Create Property:', createPropData.success ? 'PASSED' : 'FAILED', createPropData.message || createPropData.data?.title);
+    const propertyId = createPropData.data?.id;
+
+    // 8. Fetch Properties Publicly
+    const propsRes = await fetch(`${BASE_URL}/properties?location=Dhaka`);
+    const propsData = await propsRes.json() as any;
+    console.log('Query Properties:', propsData.success ? 'PASSED' : 'FAILED', `${propsData.data?.length} matching properties`);
+
+    // 9. Fetch Property Details Publicly
+    const propDetailsRes = await fetch(`${BASE_URL}/properties/${propertyId}`);
+    const propDetailsData = await propDetailsRes.json() as any;
+    console.log('Get Property Details:', propDetailsData.success ? 'PASSED' : 'FAILED', propDetailsData.data?.title);
+
   } catch (error) {
     console.error('Test execution failed:', error);
   } finally {
