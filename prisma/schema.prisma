@@ -1,0 +1,116 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  TENANT
+  LANDLORD
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+}
+
+enum RentalRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PAYMENT
+  ACTIVE
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id             String         @id @default(uuid())
+  name           String
+  email          String         @unique
+  password       String
+  role           Role
+  status         UserStatus     @default(ACTIVE)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  properties     Property[]     @relation("LandlordProperties")
+  rentalRequests RentalRequest[] @relation("TenantRequests")
+  reviews        Review[]       @relation("TenantReviews")
+}
+
+model Category {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  properties  Property[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Property {
+  id            String          @id @default(uuid())
+  title         String
+  description   String
+  location      String
+  price         Float
+  categoryId    String
+  category      Category        @relation(fields: [categoryId], references: [id])
+  amenities     String[]
+  images        String[]
+  availability  Boolean         @default(true)
+  landlordId    String
+  landlord      User            @relation("LandlordProperties", fields: [landlordId], references: [id])
+  rentalRequests RentalRequest[]
+  reviews       Review[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model RentalRequest {
+  id         String              @id @default(uuid())
+  propertyId String
+  property   Property            @relation(fields: [propertyId], references: [id])
+  tenantId   String
+  tenant     User                @relation("TenantRequests", fields: [tenantId], references: [id])
+  startDate  DateTime
+  endDate    DateTime
+  status     RentalRequestStatus @default(PENDING)
+  totalPrice Float
+  payments   Payment[]
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+}
+
+model Payment {
+  id              String         @id @default(uuid())
+  transactionId   String         @unique
+  rentalRequestId String
+  rentalRequest   RentalRequest  @relation(fields: [rentalRequestId], references: [id])
+  amount          Float
+  method          String         @default("card")
+  provider        String         @default("STRIPE")
+  status          PaymentStatus  @default(PENDING)
+  paidAt          DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+  tenantId   String
+  tenant     User     @relation("TenantReviews", fields: [tenantId], references: [id])
+  rating     Int
+  comment    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
