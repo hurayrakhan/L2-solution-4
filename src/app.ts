@@ -7,6 +7,7 @@ import { AppError } from './utils/app-error.js';
 import authRouter from './routes/auth.routes.js';
 import propertyRouter from './routes/property.routes.js';
 import landlordRouter from './routes/landlord.routes.js';
+import rentalRouter from './routes/rental.routes.js';
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api', propertyRouter);
 app.use('/api/landlord', landlordRouter);
+app.use('/api/rentals', rentalRouter);
 
 // 404 handler for routes not found
 app.all('*', (req, res, next) => {
