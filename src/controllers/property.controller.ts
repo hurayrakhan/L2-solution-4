@@ -21,7 +21,7 @@ export const getCategories = async (req: Request, res: Response, next: NextFunct
 
 export const getAllProperties = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { location, minPrice, maxPrice, categoryId, search } = req.query as any;
+    const { location, minPrice, maxPrice, categoryId, search, amenities } = req.query as any;
 
     const whereClause: any = {
       availability: true, // Only available properties are public
@@ -54,6 +54,16 @@ export const getAllProperties = async (req: Request, res: Response, next: NextFu
         { description: { contains: String(search), mode: 'insensitive' } },
         { location: { contains: String(search), mode: 'insensitive' } },
       ];
+    }
+
+    if (amenities) {
+      const amenitiesList = Array.isArray(amenities)
+        ? (amenities as string[])
+        : String(amenities).split(',').map((a) => a.trim());
+
+      whereClause.amenities = {
+        hasEvery: amenitiesList,
+      };
     }
 
     const properties = await prisma.property.findMany({

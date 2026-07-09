@@ -7,6 +7,7 @@ export const getPropertiesQuerySchema = z.object({
     maxPrice: z.string().transform((val) => (val ? parseFloat(val) : undefined)).optional(),
     categoryId: z.string().uuid('Invalid Category ID format').optional(),
     search: z.string().optional(),
+    amenities: z.union([z.string(), z.array(z.string())]).optional(),
   }),
 });
 

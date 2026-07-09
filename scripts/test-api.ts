@@ -125,9 +125,9 @@ async function runTests() {
     const propertyId = createPropData.data?.id;
 
     // 8. Fetch Properties Publicly
-    const propsRes = await fetch(`${BASE_URL}/properties?location=Dhaka`);
+    const propsRes = await fetch(`${BASE_URL}/properties?location=Dhaka&amenities=WiFi,Kitchen`);
     const propsData = await propsRes.json() as any;
-    console.log('Query Properties:', propsData.success ? 'PASSED' : 'FAILED', `${propsData.data?.length} matching properties`);
+    console.log('Query Properties:', propsData.success ? 'PASSED' : 'FAILED', `${propsData.data?.length} matching properties with amenities`);
 
     // 9. Fetch Property Details Publicly
     const propDetailsRes = await fetch(`${BASE_URL}/properties/${propertyId}`);
