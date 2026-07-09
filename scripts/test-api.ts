@@ -235,6 +235,66 @@ async function runTests() {
     const createReviewData = await createReviewRes.json() as any;
     console.log('Submit Review:', createReviewData.success ? 'PASSED' : 'FAILED', createReviewData.message || createReviewData.data?.comment);
 
+    console.log('\n--- RUNNING ADMIN TESTS ---');
+    // 18. Login Admin
+    const loginAdminRes = await fetch(`${BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: 'admin@rentnest.com',
+        password: 'admin123',
+      }),
+    });
+    const loginAdminData = await loginAdminRes.json() as any;
+    console.log('Admin Login:', loginAdminData.success ? 'PASSED' : 'FAILED', loginAdminData.message);
+    const adminToken = loginAdminData.token;
+
+    // 19. Fetch Users List as Admin
+    const adminUsersRes = await fetch(`${BASE_URL}/admin/users`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    const adminUsersData = await adminUsersRes.json() as any;
+    console.log('Admin Get Users:', adminUsersData.success ? 'PASSED' : 'FAILED', `${adminUsersData.data?.length} users found`);
+
+    const landlordUser = adminUsersData.data?.find((u: any) => u.email === landlordEmail);
+    const landlordUserId = landlordUser?.id;
+
+    // 20. Moderation: Ban Landlord User
+    if (landlordUserId) {
+      const banRes = await fetch(`${BASE_URL}/admin/users/${landlordUserId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify({ status: 'BANNED' }),
+      });
+      const banData = await banRes.json() as any;
+      console.log('Admin Ban User:', banData.success ? 'PASSED' : 'FAILED', banData.message);
+
+      const loginBannedRes = await fetch(`${BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: landlordEmail,
+          password: 'password123',
+        }),
+      });
+      const loginBannedData = await loginBannedRes.json() as any;
+      console.log('Banned User Login Blocked:', !loginBannedData.success ? 'PASSED' : 'FAILED', loginBannedData.message);
+
+      const unbanRes = await fetch(`${BASE_URL}/admin/users/${landlordUserId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify({ status: 'ACTIVE' }),
+      });
+      const unbanData = await unbanRes.json() as any;
+      console.log('Admin Unban User:', unbanData.success ? 'PASSED' : 'FAILED', unbanData.message);
+    }
+
   } catch (error) {
     console.error('Test execution failed:', error);
   } finally {
