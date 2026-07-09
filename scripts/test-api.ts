@@ -184,6 +184,40 @@ async function runTests() {
     const approveData = await approveRes.json() as any;
     console.log('Approve Rental Request:', approveData.success ? 'PASSED' : 'FAILED', approveData.message);
 
+    console.log('\n--- RUNNING PAYMENT TESTS ---');
+    // 14. Create Stripe Payment Session as Tenant
+    const paySessionRes = await fetch(`${BASE_URL}/payments/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${tenantToken}`,
+      },
+      body: JSON.stringify({
+        rentalRequestId: rentalRequestId,
+      }),
+    });
+    const paySessionData = await paySessionRes.json() as any;
+    console.log('Create Payment Session:', paySessionData.success ? 'PASSED' : 'FAILED', paySessionData.message);
+
+    // 15. Confirm Stripe Payment via simulated confirmation
+    const confirmRes = await fetch(`${BASE_URL}/payments/confirm`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        rentalRequestId: rentalRequestId,
+        transactionId: `test_tx_${Date.now()}`,
+      }),
+    });
+    const confirmData = await confirmRes.json() as any;
+    console.log('Confirm Payment (Simulation):', confirmData.success ? 'PASSED' : 'FAILED', confirmData.message);
+
+    // 16. Get Tenant Payments History
+    const payHistoryRes = await fetch(`${BASE_URL}/payments`, {
+      headers: { Authorization: `Bearer ${tenantToken}` },
+    });
+    const payHistoryData = await payHistoryRes.json() as any;
+    console.log('Get Payment History:', payHistoryData.success ? 'PASSED' : 'FAILED', `${payHistoryData.data?.length} transactions found`);
+
   } catch (error) {
     console.error('Test execution failed:', error);
   } finally {
