@@ -8,6 +8,7 @@ import authRouter from './routes/auth.routes.js';
 import propertyRouter from './routes/property.routes.js';
 import landlordRouter from './routes/landlord.routes.js';
 import rentalRouter from './routes/rental.routes.js';
+import paymentRouter from './routes/payment.routes.js';
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use('/api/auth', authRouter);
 app.use('/api', propertyRouter);
 app.use('/api/landlord', landlordRouter);
 app.use('/api/rentals', rentalRouter);
+app.use('/api/payments', paymentRouter);
 
 // 404 handler for routes not found
 app.all('*', (req, res, next) => {
