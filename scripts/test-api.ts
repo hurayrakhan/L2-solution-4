@@ -218,6 +218,23 @@ async function runTests() {
     const payHistoryData = await payHistoryRes.json() as any;
     console.log('Get Payment History:', payHistoryData.success ? 'PASSED' : 'FAILED', `${payHistoryData.data?.length} transactions found`);
 
+    console.log('\n--- RUNNING REVIEWS TESTS ---');
+    // 17. Submit Property Review as Tenant
+    const createReviewRes = await fetch(`${BASE_URL}/reviews`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${tenantToken}`,
+      },
+      body: JSON.stringify({
+        propertyId: propertyId,
+        rating: 5,
+        comment: 'Amazing place! Clean and very comfortable. Rented for a week.',
+      }),
+    });
+    const createReviewData = await createReviewRes.json() as any;
+    console.log('Submit Review:', createReviewData.success ? 'PASSED' : 'FAILED', createReviewData.message || createReviewData.data?.comment);
+
   } catch (error) {
     console.error('Test execution failed:', error);
   } finally {
