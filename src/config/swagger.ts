@@ -7,8 +7,8 @@ export const swaggerSpec = {
   },
   servers: [
     {
-      url: "http://localhost:8000",
-      description: "Local Server"
+      url: "/",
+      description: "Current Host (Auto-detected)"
     }
   ],
   components: {
