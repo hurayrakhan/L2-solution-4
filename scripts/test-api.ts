@@ -134,6 +134,56 @@ async function runTests() {
     const propDetailsData = await propDetailsRes.json() as any;
     console.log('Get Property Details:', propDetailsData.success ? 'PASSED' : 'FAILED', propDetailsData.data?.title);
 
+    console.log('\n--- RUNNING RENTAL REQUEST TESTS ---');
+    // 10. Create Rental Request as Tenant
+    const today = new Date();
+    const nextWeek = new Date();
+    nextWeek.setDate(today.getDate() + 7);
+
+    const createRentalRes = await fetch(`${BASE_URL}/rentals`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${tenantToken}`,
+      },
+      body: JSON.stringify({
+        propertyId: propertyId,
+        startDate: today.toISOString(),
+        endDate: nextWeek.toISOString(),
+      }),
+    });
+    const createRentalData = await createRentalRes.json() as any;
+    console.log('Create Rental Request:', createRentalData.success ? 'PASSED' : 'FAILED', createRentalData.message || createRentalData.data?.id);
+    const rentalRequestId = createRentalData.data?.id;
+
+    // 11. Fetch Tenant Rental Requests
+    const tenantRentalsRes = await fetch(`${BASE_URL}/rentals`, {
+      headers: { Authorization: `Bearer ${tenantToken}` },
+    });
+    const tenantRentalsData = await tenantRentalsRes.json() as any;
+    console.log('Get Tenant Rentals:', tenantRentalsData.success ? 'PASSED' : 'FAILED', `${tenantRentalsData.data?.length} rentals found`);
+
+    // 12. Fetch Landlord Requests
+    const landlordRequestsRes = await fetch(`${BASE_URL}/landlord/requests`, {
+      headers: { Authorization: `Bearer ${landlordToken}` },
+    });
+    const landlordRequestsData = await landlordRequestsRes.json() as any;
+    console.log('Get Landlord Requests:', landlordRequestsData.success ? 'PASSED' : 'FAILED', `${landlordRequestsData.data?.length} requests found`);
+
+    // 13. Approve Request as Landlord
+    const approveRes = await fetch(`${BASE_URL}/landlord/requests/${rentalRequestId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${landlordToken}`,
+      },
+      body: JSON.stringify({
+        status: 'APPROVED',
+      }),
+    });
+    const approveData = await approveRes.json() as any;
+    console.log('Approve Rental Request:', approveData.success ? 'PASSED' : 'FAILED', approveData.message);
+
   } catch (error) {
     console.error('Test execution failed:', error);
   } finally {
