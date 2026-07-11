@@ -1,0 +1,18 @@
+model Property {
+  id            String          @id @default(uuid())
+  title         String
+  description   String
+  location      String
+  price         Float
+  categoryId    String
+  category      Category        @relation(fields: [categoryId], references: [id])
+  amenities     String[]
+  images        String[]
+  availability  Boolean         @default(true)
+  landlordId    String
+  landlord      User            @relation("LandlordProperties", fields: [landlordId], references: [id])
+  rentalRequests RentalRequest[]
+  reviews       Review[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}

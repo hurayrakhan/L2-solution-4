@@ -8,13 +8,13 @@ import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger.js";
 
 
-import authRouter from './routes/auth.routes.js';
-import propertyRouter from './routes/property.routes.js';
-import landlordRouter from './routes/landlord.routes.js';
-import rentalRouter from './routes/rental.routes.js';
-import paymentRouter from './routes/payment.routes.js';
-import reviewRouter from './routes/review.routes.js';
-import adminRouter from './routes/admin.routes.js';
+import authRouter from './modules/auth/auth.route.js';
+import propertyRouter from './modules/property/property.route.js';
+import landlordRouter from './modules/landlord/landlord.route.js';
+import rentalRouter from './modules/rental/rental.route.js';
+import paymentRouter from './modules/payment/payment.route.js';
+import reviewRouter from './modules/review/review.route.js';
+import adminRouter from './modules/admin/admin.route.js';
 
 const app = express();
 

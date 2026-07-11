@@ -199,7 +199,7 @@ npm install
 ### 2. Configure Environment Variables
 Create a `.env` file in the root directory based on `.env.example`:
 ```env
-PORT=5000
+PORT=8000
 DATABASE_URL="postgresql://username:password@hostname:5432/database_name?sslmode=require"
 JWT_SECRET="your_secure_jwt_secret_key"
 JWT_EXPIRES_IN="7d"
@@ -246,7 +246,7 @@ npm start
 
 Once the server is running, the interactive **Swagger OpenAPI Documentation** is available at:
 ```
-http://localhost:5000/api-docs
+http://localhost:8000/api-docs
 ```
 You can use the built-in UI to inspect schemas, explore all request bodies, and execute API endpoints directly from your browser. Use the `Authorize` button with a generated JWT token (`Bearer <token>`) to access protected routes.
 
