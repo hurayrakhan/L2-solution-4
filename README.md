@@ -1,125 +1,263 @@
-# Assignment 4 - Backend Project
+# RentNest 🏠
+**"Find & List Rental Properties with Ease"**
 
-## 🔍 Find Your Assignment
+RentNest is a robust, production-ready backend REST API for a rental property marketplace. It provides a complete marketplace platform that connects tenants seeking rental units with landlords listing their properties, overseen by administrators who moderate the community.
 
-> 💡 Check your Student ID by clicking your **profile image** on the [Programming Hero Website](https://web.programming-hero.com/profile).
-
-| Last Digit of Student ID | Assignment |
-|:------------------------:|------------|
-| **0, 1, 2, 3** | [RentNest](./1-RentNest.md) 🏠 |
-| **4, 5, 6** | [GearUp](./2-GearUp.md) 🏋️ |
-| **7, 8, 9** | [FixItNow](./3-FixItNow.md) 🔧 |
-
----
-
-## ⚠️ Mandatory Requirements
-
-> [!CAUTION]
-> **MANDATORY - READ CAREFULLY**
-> 
-> The following **SIX requirements are MANDATORY**:
-> 1. **API Documentation** - Provide Postman collection or Swagger/OpenAPI docs covering all endpoints
-> 2. **Consistent Error Responses** - All errors must return structured JSON (`{ success, message, errorDetails }`)
-> 3. **Commits** - 20 meaningful backend commits with descriptive messages
-> 4. **Input Validation** - Server-side validation on all endpoints with proper error messages
-> 5. **Admin Credentials** - Provide working admin email & password
-> 6. **Payment Integration** - Must integrate **Stripe** or **SSLCommerz** for processing payments. Simulated/fake payments (Cash on Delivery, Pay Later) are **NOT** accepted.
->
-> ❌ **Failure to complete any of these = 0 MARKS**
-
----
-
-## 📊 Marks Distribution
-
-| # | Category | Weight | Details |
-|:-:|----------|:------:|---------|
-| 1 | API Design & Documentation | 20% | RESTful endpoints, Postman/Swagger docs, response format |
-| 2 | Database Design & Schema | 20% | Prisma schema, relations, migrations, seed script |
-| 3 | Commit History | 10% | 20 meaningful backend commits |
-| 4 | Error Handling & Validation | 10% | Input validation, structured error responses, 404 handling |
-| 5 | Core Functionality | 20% | Auth, CRUD, role-based access, middleware |
-| 6 | Payment Integration | 10% | Stripe or SSLCommerz integration, payment endpoints, payment status tracking |
-| 7 | Video Explanation | 10% | 3-5 min API walkthrough video |
-
----
-
-## 📅 Timeline
-
-| Deadline | Maximum Marks |
-|----------|:-------------:|
-| **July 09, 2026, 11:59 PM** | 60 Marks |
-| **July 10, 2026, 11:59 PM** | 50 Marks |
-| **From July 11, 2026 To July 31, 2026, 11:59 PM** | 30 Marks |
-
----
-
-## 📦 What to Submit
-
-| Item | Required |
-|------|:--------:|
-| Backend GitHub Repo | ✅ |
-| Live API URL | ✅ |
-| API Documentation (Postman/Swagger) | ✅ |
-| Demo Video (3-5 min) | ✅ |
-| Admin Credentials | ✅ |
-
-**Example:**
-```
-Backend Repo     : https://github.com/your-username/rentnest-backend
-Live API         : https://rentnest-api.vercel.app
-API Docs         : https://documenter.getpostman.com/view/xxx
-Demo Video       : https://drive.google.com/file/d/xxx/view
-Admin Email      : admin@rentnest.com
-Admin Password   : admin123
-```
-
----
-
-## 🎥 Video Explanation Guide
-
-**Duration:** 3-5 minutes | **Language:** English or Bengali
-
-**What to Cover:**
-1. Project overview & API architecture
-2. Demonstrate all 3 roles working via Postman/Thunder Client (Customer/Tenant, Provider/Landlord/Technician, Admin)
-3. Show CRUD operations on key endpoints
-4. Demonstrate error handling & validation in action
-5. Briefly explain one technical challenge you solved
-
-**Recording Options:**
-- **Loom** - Record & share link directly
-- **OBS** - Record & upload to Google Drive (set "Anyone with link" access)
+The project features role-based access control, automated inputs validation, structured error responses, interactive Swagger documentation, and integrated Stripe payment processing.
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Backend
-| Technology | Purpose |
-|------------|---------|
-| Node.js + Express | REST API |
-| TypeScript | Type safety (recommended) |
-| Postgres + Prisma | Database + ORM |
-| JWT | Authentication |
-
-### Deployment
-| Service | Purpose |
-|---------|---------| 
-| Vercel/Render | Backend API deployment |
+*   **Runtime:** Node.js + Express
+*   **Language:** TypeScript
+*   **Database:** PostgreSQL
+*   **ORM:** Prisma Client
+*   **Authentication & Security:** JSON Web Tokens (JWT) & bcryptjs
+*   **Payment Processing:** Stripe API
+*   **Request Validation:** Zod
+*   **API Documentation:** Swagger UI (`swagger-ui-express` & `swagger-jsdoc`)
+*   **Development Utilities:** `tsx` (TypeScript Execute), `typescript`
 
 ---
 
-## 🎯 Key Rules
+## 👥 Roles & Permissions
 
-- **Roles**: Each project has 3 fixed roles. Users select during registration.
-- **Payment**: Payment integration is **MANDATORY**. You must integrate either **Stripe** or **SSLCommerz** for processing payments. Include endpoints for creating payment intents/sessions, handling payment confirmations, and tracking payment status.
-- **No Frontend Required**: This is a backend-only assignment. Test your API via Postman/Thunder Client.
-- **Flexibility**: Endpoints listed in each variant are examples. Modify as needed.
+RentNest supports three distinct user roles with specific access control permissions:
+
+| Role | Description | Key Permissions |
+| :--- | :--- | :--- |
+| **Tenant** | Users looking for rental properties | Browse listings, search & filter, submit rental requests, make Stripe payments, submit property reviews, manage profile |
+| **Landlord** | Property owners listing rental units | Create and manage property listings, set property availability, approve or reject rental requests, view rental history and tenant reviews |
+| **Admin** | Platform moderators | Manage all users, toggle user status (ban/unban), oversee all listings and requests, manage property categories |
 
 ---
 
-## ⚠️ Important Notes
+## 🗄️ Database Architecture
 
-> **Plagiarism** = 0 Marks. All work must be original.
+RentNest uses **PostgreSQL** with **Prisma** to manage the database schema. The core models and relationships are illustrated in the Entity-Relationship Diagram below:
 
-**Good luck! Build a rock-solid backend you're proud of.** 🚀
+```mermaid
+erDiagram
+    USER {
+        string id PK
+        string name
+        string email UK
+        string password
+        Role role
+        UserStatus status
+        DateTime createdAt
+        DateTime updatedAt
+    }
+    CATEGORY {
+        string id PK
+        string name UK
+        DateTime createdAt
+        DateTime updatedAt
+    }
+    PROPERTY {
+        string id PK
+        string title
+        string description
+        string location
+        float price
+        string categoryId FK
+        string[] amenities
+        string[] images
+        boolean availability
+        string landlordId FK
+        DateTime createdAt
+        DateTime updatedAt
+    }
+    RENTAL_REQUEST {
+        string id PK
+        string propertyId FK
+        string tenantId FK
+        DateTime startDate
+        DateTime endDate
+        RentalRequestStatus status
+        float totalPrice
+        DateTime createdAt
+        DateTime updatedAt
+    }
+    PAYMENT {
+        string id PK
+        string transactionId UK
+        string rentalRequestId FK
+        float amount
+        string method
+        string provider
+        PaymentStatus status
+        DateTime paidAt
+        DateTime createdAt
+        DateTime updatedAt
+    }
+    REVIEW {
+        string id PK
+        string propertyId FK
+        string tenantId FK
+        int rating
+        string comment
+        DateTime createdAt
+        DateTime updatedAt
+    }
+
+    USER ||--o{ PROPERTY : "lists"
+    USER ||--o{ RENTAL_REQUEST : "requests"
+    USER ||--o{ REVIEW : "writes"
+    CATEGORY ||--o{ PROPERTY : "classifies"
+    PROPERTY ||--o{ RENTAL_REQUEST : "receives"
+    PROPERTY ||--o{ REVIEW : "receives"
+    RENTAL_REQUEST ||--o{ PAYMENT : "has"
+```
+
+---
+
+## 🚀 Key Features
+
+### 1. Authentication & Security
+*   Secure signup and login using **bcryptjs** password hashing.
+*   Stateless authentication using **JSON Web Tokens (JWT)** passed via HTTP headers or cookies.
+*   Role-based authorization middleware restricting endpoints to specific roles (`TENANT`, `LANDLORD`, `ADMIN`).
+*   Account status moderation: banned users are immediately blocked from logging in or performing actions.
+
+### 2. Properties Marketplace (Public)
+*   Browse all listed properties.
+*   Search and filter properties by location, price range, property categories, and specific amenities.
+*   Retrieve detailed information for individual property listings.
+
+### 3. Tenant Workflows
+*   Submit rental requests specifying rental dates (`startDate` and `endDate`). Total price is automatically calculated based on rental duration and property price.
+*   Process secure credit card payments via **Stripe** once a rental request is approved by a landlord.
+*   Submit reviews and ratings (1-5 stars) for completed rentals.
+
+### 4. Landlord Management
+*   Complete CRUD operations on property listings.
+*   Set property availability toggles to hide or display properties in public search.
+*   Review, approve, or reject rental requests for owned properties.
+
+### 5. Platform Moderation (Admin)
+*   Access and oversee all platform users, listings, and rental transactions.
+*   Toggle user status between `ACTIVE` and `BANNED` to moderate the platform.
+*   Create and manage property categories.
+
+---
+
+## 🛣️ API Endpoints
+
+### 🔐 Authentication
+*   `POST /api/auth/register` - Register a new user (Tenant or Landlord).
+*   `POST /api/auth/login` - Authenticate user and return a JWT.
+*   `GET /api/auth/me` - Retrieve current authenticated user details.
+
+### 🏠 Properties (Public)
+*   `GET /api/properties` - List properties with location, price range, and category filters.
+*   `GET /api/properties/:id` - Retrieve detailed info for a single property.
+*   `GET /api/categories` - Fetch all property categories.
+
+### 🧑‍🌾 Landlord Management
+*   `POST /api/landlord/properties` - Create a property listing.
+*   `PUT /api/landlord/properties/:id` - Update a property listing.
+*   `DELETE /api/landlord/properties/:id` - Delete a property listing.
+*   `GET /api/landlord/requests` - Retrieve rental requests for the landlord's properties.
+*   `PATCH /api/landlord/requests/:id` - Approve or reject a rental request.
+
+### 📝 Rental Requests (Tenant)
+*   `POST /api/rentals` - Submit a new rental request.
+*   `GET /api/rentals` - Retrieve current tenant's rental requests history.
+*   `GET /api/rentals/:id` - Retrieve detailed info for a single rental request.
+
+### 💳 Payments
+*   `POST /api/payments/create` - Generate a Stripe checkout session for approved rental requests.
+*   `POST /api/payments/confirm` - Confirm a successful payment transaction (simulates webhook or callback handler).
+*   `GET /api/payments` - Retrieve current user's payment/transaction history.
+*   `GET /api/payments/:id` - Retrieve detailed info for a single payment.
+
+### ⭐ Reviews
+*   `POST /api/reviews` - Leave a review and rating for a property.
+
+### 👑 Admin Management
+*   `GET /api/admin/users` - View all platform users.
+*   `PATCH /api/admin/users/:id` - Ban or unban a user.
+*   `GET /api/admin/properties` - View all listings.
+*   `GET /api/admin/rentals` - View all rental requests.
+
+---
+
+## ⚙️ Configuration & Installation
+
+### Prerequisites
+*   Node.js (v18 or higher recommended)
+*   npm or yarn
+*   PostgreSQL database instance
+
+### 1. Clone & Install Dependencies
+```bash
+npm install
+```
+
+### 2. Configure Environment Variables
+Create a `.env` file in the root directory based on `.env.example`:
+```env
+PORT=5000
+DATABASE_URL="postgresql://username:password@hostname:5432/database_name?sslmode=require"
+JWT_SECRET="your_secure_jwt_secret_key"
+JWT_EXPIRES_IN="7d"
+
+# Stripe Configurations
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+```
+
+### 3. Setup Database & Seeding
+Run Prisma migrations to create the database schemas and generate the Prisma Client:
+```bash
+# Run database migrations
+npm run prisma:migrate
+
+# Generate Prisma Client
+npm run prisma:generate
+
+# Seed default categories and admin credentials
+npm run prisma:seed
+```
+*Note: Seeding creates an Admin user with email `admin@rentnest.com` and password `admin123`.*
+
+---
+
+## 🖥️ Running the Application
+
+### Development Mode
+Start the application with hot-reloading enabled (using `tsx watch`):
+```bash
+npm run dev
+```
+
+### Production Build & Run
+Compile TypeScript to JavaScript and run the production server:
+```bash
+npm run build
+npm start
+```
+
+---
+
+## 📚 API Documentation
+
+Once the server is running, the interactive **Swagger OpenAPI Documentation** is available at:
+```
+http://localhost:5000/api-docs
+```
+You can use the built-in UI to inspect schemas, explore all request bodies, and execute API endpoints directly from your browser. Use the `Authorize` button with a generated JWT token (`Bearer <token>`) to access protected routes.
+
+---
+
+## 🧪 Integration Tests
+
+RentNest includes an automated end-to-end integration test suite that tests registration, login, property creation, rental requests, Stripe payment simulation, reviews, and admin banning workflows.
+
+To run the integration tests:
+```bash
+npm run test
+```
+The test suite runs on an isolated port (`5001`) and prints details of each step's success or failure to the terminal.
